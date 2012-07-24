@@ -1,0 +1,47 @@
+/* 
+    Document   : project
+    Created on : Feb 6, 2012, 1:11:29 AM
+    Author     : dmeganoski
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+span.Count {
+    margin: 5px;
+}
+h2 {
+    line-height: 20px;
+    margin: 10px;
+}
+div.InfoBox {
+    background: #FFF;
+    display: inline-block;
+    width: 200px;
+    padding: 10px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+div.InfoBox li {
+    padding: 0px 10px;
+    border-bottom: 1px solid #CCC;
+}
+p.ProjectDescription{
+    float: right;
+    width: 400px;
+    margin: 10px;
+}
+/*--------- Side Panel -------*/
+div.Box ul.Tasks li {
+    background: #FFF;
+    border: 1px solid #CCC;
+    margin: 2px 0;
+    padding: 0px 5px;
+}
+ul.Tasks span.Delete {
+    float: right;
+    font-size: 120%;
+}
