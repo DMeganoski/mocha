@@ -17,8 +17,6 @@ $Validation = new Gdn_Validation(); // To validate permissions (if necessary).
 /*
  * Construct the primary table for general project data
  * 
- * TODO: figure out how to retrieve the current date/time
- * 
  * InsertUserID: the user who created the project
  * Title: the title of the project
  * Description: long project description

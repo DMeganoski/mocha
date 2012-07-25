@@ -66,7 +66,10 @@ class ProjectController extends MochaController {
 	// Call Gdn_Controller's Initialize() as well.
 	parent::Initialize();
     }
-
+    
+    /**
+     * Wahtever
+     */
     public function Index() {
 	
 	$UserID = Gdn::Session()->UserID;
@@ -83,7 +86,6 @@ class ProjectController extends MochaController {
     public function Overview() {
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
-	
 	// Get the viewing user ID
 	$Session = Gdn::Session();
 	$ViewingUserID = $Session->UserID;
