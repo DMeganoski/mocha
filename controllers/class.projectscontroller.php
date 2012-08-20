@@ -3,6 +3,9 @@
 if (!defined('APPLICATION'))
     exit();
 
+/**
+ * This is the controller for viewing a list of all available projects.
+ */
 class ProjectsController extends MochaController {
 
     /** @var array List of objects to prep. They will be available as $this->$Name. */
@@ -70,6 +73,8 @@ class ProjectsController extends MochaController {
 	// Add modules to page
 	$this->AddModule($ProjectsSideModule);
 	$this->AddModule($ProjectsHeadModule);
+	
+	// TODO: Add for each to to sort through projects that the user can see.
 
 	$this->Projects = $this->ProjectModel->Get();
 	

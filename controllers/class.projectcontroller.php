@@ -243,9 +243,9 @@ class ProjectController extends MochaController {
 	    $this->Form->SetModel($ProjectModel);
 	    $this->Form->AddHidden("ProjectID");
 	    $this->Form->SetFormValue("ProjectID", $ProjectID);
-	    
+	    $this->Form->SetData($ProjectModel->GetID($ProjectID));
 	    if($this->Form->AuthenticatedPostBack() === FALSE) {
-		$this->Form->SetData($ProjectModel->GetID($ProjectID));
+		
 	    } else {
 		if($this->Form->Save()) {
 		    
