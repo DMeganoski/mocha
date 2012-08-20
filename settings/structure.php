@@ -35,17 +35,12 @@ $Construct->Table('Project')
 	->Column('DateUpdated', 'date', TRUE)
 	->Column('DateDue', 'date', TRUE)
 	->Column('PaypalCode', 'text', TRUE)
-	
-	/* PREP: Adding other users to project
-	->Column('Consultants', 'text', TRUE)
-	->Column('Clients', 'text', TRUE)
-	 * 
-	 */
-	/* PREP: Source Support
+	->Column('Admin', 'text', TRUE)
+	->Column('Team', 'text', TRUE)
+	->Column('Followers', 'text', TRUE)
 	->Column('SourceHost', 'varchar(50)', TRUE)
 	->Column('SourceHTTP', 'varchar(255)', TRUE)
-	 * 
-	 */
+
 	->Set($Explicit, $Drop);
 
 /*
