@@ -84,6 +84,8 @@ class ProjectController extends MochaController {
     }
     
     public function Overview() {
+        
+        $this->Initialize();
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	// Get the viewing user ID
@@ -92,18 +94,19 @@ class ProjectController extends MochaController {
 	$this->UserName = $Session->User->Name;
 
 	// Create and configure the head module (tabs)
-	$ProjectsHeadModule = new ProjectsHeadModule();
-	$ProjectsHeadModule->ViewingProjectID = $RequestedID;
-	$ProjectsHeadModule->SetView('Project','Overview');
+	$HeadModule = new ProjectsHeadModule();
+	$HeadModule->ViewingProjectID = $RequestedID;
+	$HeadModule->SetView('Project','Overview');
 
 	// Create and Configure the side module
-	$ProjectsSideModule = new ProjectsSideModule();
-	$ProjectsSideModule->ViewingProjectID = $RequestedID;
-	$ProjectsSideModule->SetView('Project','Overview');
+	$SideModule = new ProjectsSideModule();
+	$SideModule->ViewingProjectID = $RequestedID;
+	$SideModule->SetView('Project','Overview');
 	
 	// Add the modules
-	$this->AddModule($ProjectsHeadModule);
-	$this->AddModule($ProjectsSideModule);
+	$this->AddModule($HeadModule);
+	$this->AddModule($SideModule);
+	$this->AddJsFile('sidepanel.js');
 	
 	// Get Project Data
 	$this->Project = $this->ProjectModel->GetWhere('ProjectID', $RequestedID)->FirstRow();

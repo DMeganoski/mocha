@@ -90,6 +90,7 @@ class TaskModel extends Gdn_Model {
     }
 
     /* ---------------------------- Functional Methods --------------------- */
+    // Not for retrieving data, but modifying it, ect.
 
     public function NestTask($ParentID, $ChildID) {
 

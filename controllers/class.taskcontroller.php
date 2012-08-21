@@ -104,13 +104,12 @@ class TaskController extends MochaController {
 
     public function Delete() {
 
-
-
 	$ProjectID = GetValue(0, $this->RequestArgs, NULL);
 	$TaskID = GetValue(1, $this->RequestArgs, NULL);
-	$Task = $this->ProjectTaskModel->GetID($TaskID);
+	$Task = $this->TaskModel->Get($TaskID);
+        $this->AddJsFile('sidepanel.js');
 	if ($this->Form->AuthenticatedPostBack() === FALSE) {
-	    
+            
 	} else {
 
 	    // Tricky way of getting a cancel button
@@ -118,7 +117,7 @@ class TaskController extends MochaController {
 	    $Verify = $FormValues['Submit'];
 
 	    if ($Verify == "Delete") {
-		$Deleted = $this->ProjectTaskModel->Delete($TaskID);
+		$this->TaskModel->Delete($TaskID);
 		$this->InformMessage("Task Deleted");
 	    } else {
 		$this->InformMessage("Delete Canceled");
@@ -137,6 +136,90 @@ class TaskController extends MochaController {
 	    $this->Message = NULL;
 	    $this->Render();
 	}
+    }
+    
+    /**
+     * A post function to get the tasks for a specific project and user and return them as an html list 
+     */
+    public function GetTasks() {
+        
+        $Request = Gdn::Request();
+	$ProjectID = $Request->Post('ProjectID');
+        $TimeStamp = $Request->Post('TimeStamp');
+        
+        $this->ViewingProjectID = $ProjectID;
+        $this->_CountTasks($TimeStamp);
+	$this->_GetTasks($TimeStamp);
+	$this->_GetTimes($TimeStamp);
+        include_once(PATH_APPLICATIONS.DS."mocha/views/task/tasklist.php");
+        
+    }
+    
+    /**
+     * Method for retreiving current project's task data 
+     */
+    private function _GetTasks($TimeStamp) {
+	// Get current date / time
+	$TodaysDate = time(); // Timestamp format
+	$this->Date = $TodaysDate;
+	
+	// Query data
+	$this->_Tasks = $this->TaskModel->GetWhere(array("t.ProjectID" => $this->ViewingProjectID));
+	
+	// Select Tasks to show
+	// TODO check to see if we need to offset user timezone
+	foreach ($this->_Tasks as &$Task) {
+	    
+	    // First, lets do some math for days
+	    $Hour = 3600;
+	    $Hours24 = $Hour * 24;
+	    $Hours48 = $Hour * 48;
+	    
+	    $TaskTimestamp = Gdn_Format::ToTimestamp($Task->DateDue);
+	    
+	    $Task->Timestamp = $TaskTimestamp;
+	    //$Task
+	    if ($TaskTimestamp < $TodaysDate+$Hours24) {
+		$Task->Today = 1;
+	    } elseif ($TaskTimestamp < $TodaysDate+$Hours48) {
+		$Task->Tomorrow = 1;
+	    } else {
+		$Task->Future = 1;
+	    }
+	}
+    }
+    
+    private function _CountTasks() {
+	
+	$ProjectID = $this->ViewingProjectID;
+	
+	// Count Tasks
+	$this->DeliverablesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 3));
+	$this->MilestonesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 2));
+	// since we're going by the numeric type id,
+	// we have to add types 0 and 1, both simple tasks.
+	$UnnestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 0));
+	$NestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 1));
+	$this->TasksCount = $NestedTasks + $UnnestedTasks;
+	
+    }
+    
+    /**
+     * Method for setting timestamps for future days. 
+     */
+    private function _GetTimes() {
+	// Get current date / time
+	//$TodaysDate = time(); // Timestamp format
+	//$this->Date = $TodaysDate;
+	//$this->OneDay = new DateInterval("P1D");
+	
+	//$this->Now = date('Y-m-d');
+	//$this->TodayDate = new DateTime($this->Now);
+        $this->TodayTimestamp = $this->Date->getTimestamp();
+	$this->Date->add($this->OneDay);
+	$this->TomorrowTimestamp = $this->Date->getTimestamp();
+        
+
     }
 
 }

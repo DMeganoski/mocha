@@ -139,11 +139,5 @@ class ProjectsSideModule extends Gdn_Module {
 	$this->Date = new DateTime($this->Now);
 	$this->Date->add($OneDay);
     }
-    
-    private function _GetProject() {
-	
-	$ProjectModel = new ProjectModel();
-	
-    }
 
 }
