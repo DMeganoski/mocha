@@ -7,6 +7,8 @@ class ProjectsSideModule extends Gdn_Module {
 
     public $ViewingProjectID = NULL;
     
+    private $_ViewingUserID = NULL;
+    
     /**
      * All Tasks for the current project,
      * set by $this->_GetTasks
@@ -55,15 +57,19 @@ class ProjectsSideModule extends Gdn_Module {
     }
 
     public function ToString() {
+        if (C('Garden.RewriteUrls')) {
+            $this->HomeLink = "/";
+        } else {
+            $this->HomeLink = "/index.php?p=/";
+        }
 	$String = '';
 	$Session = Gdn::Session();
 	$this->LoggedIn = Gdn::Session()->IsValid();
 	$permissions = $Session->User->Permissions;
 	$this->admin = preg_match('/Garden.Settings.Manage/', $permissions);
 	// Retrieve and sort tasks upcoming for this project
-	$this->_CountTasks();
-	$this->_GetTasks();
-	$this->_GetTimes();
+        $this->_GetTimes();
+        $this->_CountTasks();
 
 	ob_start();
 
@@ -83,47 +89,13 @@ class ProjectsSideModule extends Gdn_Module {
 	
 	// Count Tasks
 	$this->DeliverablesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 3));
-	$this->MilestonesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 2));
+	//$this->MilestonesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 2));
 	// since we're going by the numeric type id,
 	// we have to add types 0 and 1, both simple tasks.
-	$UnnestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 0));
-	$NestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 1));
-	$this->TasksCount = $NestedTasks + $UnnestedTasks;
+	//$UnnestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 0));
+	//$NestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 1));
+	//$this->TasksCount = $NestedTasks + $UnnestedTasks;
 	
-    }
-
-    /**
-     * Method for retreiving current project's task data 
-     */
-    private function _GetTasks() {
-	// Get current date / time
-	$TodaysDate = time(); // Timestamp format
-	$this->Date = $TodaysDate;
-	
-	// Query data
-	$this->_Tasks = $this->TaskModel->GetWhere(array("t.ProjectID" => $this->ViewingProjectID));
-	
-	// Select Tasks to show
-	// TODO check to see if we need to offset user timezone
-	foreach ($this->_Tasks as &$Task) {
-	    
-	    // First, lets do some math for days
-	    $Hour = 3600;
-	    $Hours24 = $Hour * 24;
-	    $Hours48 = $Hour * 48;
-	    
-	    $TaskTimestamp = Gdn_Format::ToTimestamp($Task->DateDue);
-	    
-	    $Task->Timestamp = $TaskTimestamp;
-	    //$Task
-	    if ($TaskTimestamp < $TodaysDate+$Hours24) {
-		$Task->Today = 1;
-	    } elseif ($TaskTimestamp < $TodaysDate+$Hours48) {
-		$Task->Tomorrow = 1;
-	    } else {
-		$Task->Future = 1;
-	    }
-	}
     }
     
     /**
@@ -136,8 +108,6 @@ class ProjectsSideModule extends Gdn_Module {
 	$this->OneDay = new DateInterval("P1D");
 	
 	$this->Now = date('Y-m-d');
-	$this->Date = new DateTime($this->Now);
-	$this->Date->add($OneDay);
-    }
+	$this->Date = new DateTime($this->Now);    }
 
 }

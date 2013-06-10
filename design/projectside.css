@@ -1,0 +1,32 @@
+/* 
+    Document   : projectside
+    Created on : Sep 13, 2012, 3:32:16 PM
+    Author     : DMeganoski
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+div.TaskTabs {
+    overflow: auto;
+}
+ul.Days {
+    width: 100%;
+}
+ul.Days li.Selected {
+    background: #CFECFF;
+}
+ul.Days li {
+    float: left;
+    margin: auto;
+    padding: 0px 7px;
+    background: #444;
+    color: #FFF;
+
+}
+ul.Days li:hover {
+    cursor: pointer;
+}
+

@@ -57,7 +57,10 @@ class ProjectController extends MochaController {
 	    $this->AddCssFile('editor.css');
 
 	    $this->AddCssFile('/applications/mocha/design/project.css');
+            $this->AddJsFile('/applications/mocha/js/project.js');
 	}
+
+        	    
 
 	// Add Modules
 	$this->AddModule('GuestModule');
@@ -71,7 +74,7 @@ class ProjectController extends MochaController {
      * Wahtever
      */
     public function Index() {
-	
+
 	$UserID = Gdn::Session()->UserID;
 
 	$RequestedID = GetValue(0, $this->RequestArgs, 0);
@@ -79,7 +82,8 @@ class ProjectController extends MochaController {
 	if ($RequestedID === 0) {
 	    $this->Render();
 	} else {
-	    Redirect("project/overview/$RequestedID");
+	    $this->View = "overview";
+            $this->Overview();
 	}
     }
     
@@ -93,18 +97,13 @@ class ProjectController extends MochaController {
 	$ViewingUserID = $Session->UserID;
 	$this->UserName = $Session->User->Name;
 
-	// Create and configure the head module (tabs)
-	$HeadModule = new ProjectsHeadModule();
-	$HeadModule->ViewingProjectID = $RequestedID;
-	$HeadModule->SetView('Project','Overview');
 
 	// Create and Configure the side module
 	$SideModule = new ProjectsSideModule();
 	$SideModule->ViewingProjectID = $RequestedID;
 	$SideModule->SetView('Project','Overview');
 	
-	// Add the modules
-	$this->AddModule($HeadModule);
+	// Add the module
 	$this->AddModule($SideModule);
 	$this->AddJsFile('sidepanel.js');
 	
@@ -128,17 +127,12 @@ class ProjectController extends MochaController {
 	$ViewingUserID = $Session->UserID;
 	$this->UserName = $Session->User->Name;
 
-	// Create and configure the head module (tabs)
-	$ProjectsHeadModule = new ProjectsHeadModule();
-	$ProjectsHeadModule->SetView('Project');
-
 	// Create and Configure the side module
 	$ProjectsSideModule = new ProjectsSideModule();
 	$ProjectsSideModule->ViewingProjectID = $RequestedID;
 	$ProjectsSideModule->SetView('Project');
 
 	// Add the modules
-	$this->AddModule($ProjectsHeadModule);
 	$this->AddModule($ProjectsSideModule);
 
 	// Get Project Data
@@ -198,6 +192,36 @@ class ProjectController extends MochaController {
 	    }
 	}
 	$this->Render();
+    }
+    
+    public function Tasks() {
+        
+        $this->Initialize();
+        
+        $this->AddJsFile('tasks.js');
+	
+	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
+	// Get the viewing user ID
+	$Session = Gdn::Session();
+	$this->ViewingUserID = $Session->UserID;
+	$this->UserName = $Session->User->Name;
+
+
+	// Create and Configure the side module
+	$SideModule = new ProjectsSideModule();
+	$SideModule->ViewingProjectID = $RequestedID;
+	$SideModule->SetView('Project','Tasks');
+	
+	// Add the module
+	$this->AddModule($SideModule);
+	$this->AddJsFile('sidepanel.js');
+        
+        $this->ViewingProjectID = $RequestedID;
+        
+        $this->Tasks = $this->TaskModel->GetWhere("ProjectID", $RequestedID);
+        
+        $this->Render();
+        
     }
 
     public function Create() {

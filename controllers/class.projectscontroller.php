@@ -56,23 +56,30 @@ class ProjectsController extends MochaController {
 	    $this->AddJsFile('widgetchoices.js');
 	    $this->AddCssFile('editor.css');
 	}
-
+        if (C('Garden.RewriteUrls')) {
+            $this->HomeLink = "/";
+        } else {
+            $this->HomeLink = "/index.php?p=/";
+        }
+        
 	// Call Gdn_Controller's Initialize() as well.
 	parent::Initialize();
     }
 
     public function Index() {
-	
-	// Configure Side Module
+        
+        // TODO: Add check if user has projects, decided default page.
+	$this->View = 'all';
+        $this->All();
+    }
+    
+    public function All() {
+        // Configure Side Module
 	$ProjectsSideModule = new ProjectsSideModule();
 	$ProjectsSideModule->SetView('Projects');
-	
-	// Configure Head Module
-	$ProjectsHeadModule = new ProjectsHeadModule();
-	
+		
 	// Add modules to page
 	$this->AddModule($ProjectsSideModule);
-	$this->AddModule($ProjectsHeadModule);
 	
 	// TODO: Add for each to to sort through projects that the user can see.
 
@@ -81,6 +88,24 @@ class ProjectsController extends MochaController {
 	Gdn::UserModel()->JoinUsers($this->Projects, array('InsertUserID'));
 	
 	$this->Render();
+    }
+    
+    public function User() {
+        
+        $ProjectsSideModule = new ProjectsSideModule();
+	$ProjectsSideModule->SetView('Projects');
+	
+	
+	// Add modules to page
+	$this->AddModule($ProjectsSideModule);
+	
+	// TODO: Add for each to to sort through projects that the user can see.
+
+	$this->Projects = $this->ProjectModel->GetWhere("InsertUserID", $this->User->UserID);
+        
+        $this->View = 'all';
+        $this->Render();
+        
     }
 
 }

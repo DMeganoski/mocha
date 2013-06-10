@@ -12,6 +12,7 @@ root {
 span.Count {
     margin: 5px;
 }
+
 h2 {
     line-height: 20px;
     margin: 10px;
@@ -19,19 +20,22 @@ h2 {
 div.InfoBox {
     background: #FFF;
     display: inline-block;
-    width: 200px;
-    padding: 10px;
+    vertical-align: top;
+    max-width: 250px;
+    min-width: 200px;
+    padding: 15px;
+    margin: 10px;
+    border: 1px solid rgb(204, 204, 204);
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    box-shadow: 0px 2px 0px rgba(255, 255, 255, 0.8);
 }
 div.InfoBox li {
     padding: 0px 10px;
     border-bottom: 1px solid #CCC;
 }
 p.ProjectDescription{
-    float: right;
-    width: 400px;
     margin: 10px;
 }
 /*--------- Side Panel -------*/

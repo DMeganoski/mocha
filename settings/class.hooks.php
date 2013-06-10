@@ -14,7 +14,18 @@ class MochaHooks implements Gdn_IPlugin {
      * Add the main menu link
      * @param type $Sender
      */
+    
+    
     public function Base_Render_Before($Sender) {
+        
+        if (C(Garden.RewriteUrls)) {
+            $HomeLink = "/";
+        } else {
+            $Homelink = "/index.php?p=/";
+        }
+        $Sender->SetData('projects_link',
+                "<a href='".$HomeLink."projects'>".T('Projects')."</a>"
+                );
 	if ($Sender->Menu) {
 	    $Sender->Menu->AddLink('Projects', T('Projects'), '/projects', FALSE, array('class' => 'Projects', 'Standard' => TRUE));
 	}

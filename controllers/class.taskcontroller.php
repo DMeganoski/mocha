@@ -168,7 +168,7 @@ class TaskController extends MochaController {
 	
 	// Select Tasks to show
 	// TODO check to see if we need to offset user timezone
-	foreach ($this->_Tasks as &$Task) {
+	/*foreach ($this->_Tasks as &$Task) {
 	    
 	    // First, lets do some math for days
 	    $Hour = 3600;
@@ -186,7 +186,7 @@ class TaskController extends MochaController {
 	    } else {
 		$Task->Future = 1;
 	    }
-	}
+	}*/
     }
     
     private function _CountTasks() {
@@ -211,10 +211,10 @@ class TaskController extends MochaController {
 	// Get current date / time
 	//$TodaysDate = time(); // Timestamp format
 	//$this->Date = $TodaysDate;
-	//$this->OneDay = new DateInterval("P1D");
+	$this->OneDay = new DateInterval("P1D");
 	
-	//$this->Now = date('Y-m-d');
-	//$this->TodayDate = new DateTime($this->Now);
+	$this->Now = date('Y-m-d');
+	$this->Date = new DateTime($this->Now);
         $this->TodayTimestamp = $this->Date->getTimestamp();
 	$this->Date->add($this->OneDay);
 	$this->TomorrowTimestamp = $this->Date->getTimestamp();
