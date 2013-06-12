@@ -55,6 +55,8 @@ class ProjectsController extends MochaController {
 	    $this->AddCssFile('widgetchoices.css');
 	    $this->AddJsFile('widgetchoices.js');
 	    $this->AddCssFile('editor.css');
+            $this->AddCssFile('/applications/mocha/design/project.css');
+
 	}
         if (C('Garden.RewriteUrls')) {
             $this->HomeLink = "/";

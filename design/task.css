@@ -1,0 +1,58 @@
+/* 
+    Document   : task
+    Created on : Jun 10, 2013, 5:33:24 PM
+    Author     : dmeganoski
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+    .row {
+    width: 100%;
+    display: block;
+    margin: 0px;
+    padding: 0px;
+}
+.column {
+    display: inline-block;
+    float: left;
+}
+.type, select#Form_Type {
+    width: 120px;
+}
+.title, input#Form_Title {
+    width: 200px;
+}
+.description {
+    width: 30%;
+    min-width: 150px;
+}
+input#Form_Description {
+    width: 100%;
+}
+.due {
+    width: 270px;
+}
+.save {
+    width: 50px;
+}
+select.Month, select.Day, select.Year {
+    width: 90px;
+}
+input.InputBox {
+    width: 190px;
+}
+div.column .Buttons {
+    vertical-align: top;
+    margin-top: 0px;
+}
+#TaskFormBox {
+    background: url("/themes/apptastic/src/images/toolbar-bg.png") repeat scroll 0% 0% rgb(244, 244, 244);
+    padding: 10px 0px 0px 20px;
+}
+span.Delete {
+    float: right;
+    vertical-align: top;
+}

@@ -12,6 +12,7 @@ $DateUpdated = new DateTime($this->Project->DateUpdated);
 <ul class='DataList'>
     <li class='Item'>
         <div class='ItemContent'>
+            <div class='InfoBoxContainer'>
             <div class='InfoBox'><?
 		echo "<h5>Created: </h5>".$DateInserted->format('F d, Y');
 	    ?></div>
@@ -24,13 +25,15 @@ $DateUpdated = new DateTime($this->Project->DateUpdated);
             <div class='InfoBox'><?
 		echo "<h5>Download: </h5>http://download.com";
 	    ?></div>
-        </div>
-    </li>
-</ul>
-<div class="Box ProjectDescription">
+                </div>
+            <div class="Box ProjectDescription">
     <p class="ProjectDescription"><?
     echo $this->Project->Description;
     ?></p>
 </div>
+        </div>
+    </li>
+</ul>
+
 
 

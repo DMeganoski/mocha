@@ -10,12 +10,37 @@ root {
     display: block;
 }
 span.Count {
-    margin: 5px;
+    margin: 0px;
+    float: right;
 }
 
 h2 {
     line-height: 20px;
     margin: 10px;
+}
+li.Item {
+    overflow: auto;
+}
+img.Project {
+    width: 250px;
+}
+img.ProjectList {
+    width: 100px;
+    float: left;
+}
+div.ProjectContent {
+    float: left;
+    margin-left: 10px;
+    display: block;
+    max-width: 700px;
+}
+div.Controls {
+    float: right;
+    width: 100px;
+}
+div.Links {
+    float: right;
+    width: 100px;
 }
 div.InfoBox {
     background: #FFF;
@@ -48,4 +73,45 @@ div.Box ul.Tasks li {
 ul.Tasks span.Delete {
     float: right;
     font-size: 120%;
+}
+span.Today {
+    background: none repeat scroll 0% 0%;
+    background-color: #e9ea5d;
+    color: #777777;
+}
+span.Overdue {
+    background: none repeat scroll 0% 0%;
+    background-color: #e24855;
+    color: #777777;
+}
+span.Future {
+    background: none repeat scroll 0% 0%;
+    background-color: #3ed64b;
+    color: #777777;
+}
+div.Black {
+    background: #000;
+}
+ol.Children {
+    margin-left: 20px;
+}
+ol.Children li.Item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+div.TaskType {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 10px;
+}
+li.type1 .TaskType,
+li.type0 .TaskType {
+    background: #3ed64b;
+}
+li.type2 .TaskType {
+    background: #e24855;
+}
+li.type3 .TaskType {
+    background:#e9ea5d;
 }

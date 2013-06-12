@@ -14,9 +14,23 @@ $(document).ready(function() {
             }
         );
     };
+    jQuery.fn.newTask = function(projectID) {
+        $.get('index.php?p=/task/create/'+projectID, function(data) {
+            $('#TaskFormBox').html(data);
+            $('#TaskFormBox').slideDown(300);
+        });
+    };
+    
+    $("h1.page-header").append("<div class='pull-right'><button class='Button TestButton' onclick=\"$('#TaskFormBox').newTask(projectID);\"><span class='Sprite SpEditProfile'></span>New Task</button></div>");
+    
+    
     console.log('Script Loaded');
     $('ul.TaskList').updateTasks(today);
-    
+    //$.datepicker.formatDate( "yy-mm-dd", new Date( 2007, 1 - 1, 26 ) );
+    //$( "#datepicker" ).datepicker();
+    $( "#datepicker" ).click(function() {
+                $.datepicker().show();
+    });
 });
 
 

@@ -49,13 +49,7 @@ class ProjectController extends MochaController {
 	    $this->AddJsFile('global.js');
 	    $this->AddCssFile('style.css');
 	    $this->AddCssFile('custom.css');
-
-	    $this->AddCssFile('info.css');
-	    $this->AddJsFile('info.js');
-	    $this->AddCssFile('widgetchoices.css');
-	    $this->AddJsFile('widgetchoices.js');
-	    $this->AddCssFile('editor.css');
-
+            
 	    $this->AddCssFile('/applications/mocha/design/project.css');
             $this->AddJsFile('/applications/mocha/js/project.js');
 	}
@@ -197,8 +191,9 @@ class ProjectController extends MochaController {
     public function Tasks() {
         
         $this->Initialize();
-        
+        $this->AddJsFile('jquery-ui-1.10.3.custom.min.js');
         $this->AddJsFile('tasks.js');
+        $this->AddCssFile('task.css');
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	// Get the viewing user ID
@@ -291,13 +286,22 @@ class ProjectController extends MochaController {
     }
     
     public function Delete() {
+        
+        // TODO: Verify User
+        
+        // TODO: Verify the project isn't already deleted
+        // TODO: Verify project has been deleted
+        // TODO: Verify tasks for related project have been deleted
+        
 	$ProjectID = GetValue(0, $this->RequestArgs, 0);
 	
-	if ($ProjectID > 0) {
+	if ($ProjectID > 0 && Gdn::Session()->IsValid()) {
 	    
 	    $ProjectModel = $this->ProjectModel;
 	    
 	    $ProjectModel->Delete($ProjectID);
+            
+            $this->TaskModel->Delete(0, $ProjectID);
 	    
 	    Redirect('/projects');
 	    

@@ -66,7 +66,7 @@ class ProjectsSideModule extends Gdn_Module {
 	$Session = Gdn::Session();
 	$this->LoggedIn = Gdn::Session()->IsValid();
 	$permissions = $Session->User->Permissions;
-	$this->admin = preg_match('/Garden.Settings.Manage/', $permissions);
+	$this->admin = preg_match('/Projects.Manage/', $permissions);
 	// Retrieve and sort tasks upcoming for this project
         $this->_GetTimes();
         $this->_CountTasks();
@@ -88,13 +88,10 @@ class ProjectsSideModule extends Gdn_Module {
 	$ProjectID = $this->ViewingProjectID;
 	
 	// Count Tasks
-	$this->DeliverablesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 3));
-	//$this->MilestonesCount = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 2));
-	// since we're going by the numeric type id,
-	// we have to add types 0 and 1, both simple tasks.
-	//$UnnestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 0));
-	//$NestedTasks = $this->TaskModel->GetCount(array('ProjectID' => $ProjectID, 'Type' => 1));
-	//$this->TasksCount = $NestedTasks + $UnnestedTasks;
+        $this->TotalCount = $this->TaskModel->CountTasks($ProjectID);
+        $this->OverdueCount = $this->TaskModel->CountTasks($ProjectID,$this->Date->getTimestamp(),0);//$this->TaskModel->GetWhereGreater($ProjectID, time());
+	$this->TodayCount = $this->TaskModel->CountTasks($ProjectID,$this->Date->getTimestamp(),1);
+	$this->FutureCount = $this->TaskModel->CountTasks($ProjectID,$this->Date->getTimestamp(),2);
 	
     }
     
@@ -103,11 +100,12 @@ class ProjectsSideModule extends Gdn_Module {
      */
     private function _GetTimes() {
 	// Get current date / time
-	$TodaysDate = time(); // Timestamp format
+	//$TodaysDate = time(); // Timestamp format
 	//$this->Date = $TodaysDate;
 	$this->OneDay = new DateInterval("P1D");
 	
-	$this->Now = date('Y-m-d');
-	$this->Date = new DateTime($this->Now);    }
+	$this->Today = date('Y-m-d');
+	$this->Date = new DateTime($this->Today);
+    }
 
 }

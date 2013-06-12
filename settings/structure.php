@@ -26,29 +26,28 @@ $Validation = new Gdn_Validation(); // To validate permissions (if necessary).
  * 
  */
 $Construct->Table('Project')
-	->PrimaryKey('ProjectID')
-	
-	->Column('InsertUserID', 'int', FALSE)
-	->Column('Title', 'varchar(50)', TRUE)
-	->Column('Description', 'text', TRUE)
-	->Column('DateInserted', 'date', TRUE)
-	->Column('DateUpdated', 'date', TRUE)
-	->Column('DateDue', 'date', TRUE)
-	->Column('PaypalCode', 'text', TRUE)
-	->Column('Admin', 'text', TRUE)
-	->Column('Team', 'text', TRUE)
-	->Column('Followers', 'text', TRUE)
-	->Column('SourceHost', 'varchar(50)', TRUE)
-	->Column('SourceHTTP', 'varchar(255)', TRUE)
-
-	->Set($Explicit, $Drop);
+        ->PrimaryKey('ProjectID')
+        ->Column('InsertUserID', 'int', FALSE)
+        ->Column('Title', 'varchar(50)', TRUE)
+        ->Column('Description', 'text', TRUE)
+        ->Column('DateInserted', 'date', TRUE)
+        ->Column('DateUpdated', 'date', TRUE)
+        ->Column('DateDue', 'date', TRUE)
+        ->Column('DueTimestamp', 'int', TRUE)
+        ->Column('PaypalCode', 'text', TRUE)
+        ->Column('Admin', 'text', TRUE)
+        ->Column('Team', 'text', TRUE)
+        ->Column('Followers', 'text', TRUE)
+        ->Column('SourceHost', 'varchar(50)', TRUE)
+        ->Column('SourceHTTP', 'varchar(255)', TRUE)
+        ->Set($Explicit, $Drop);
 
 /*
  * Table for tasks. All are relative to a project.
  * 
  * Type: The Type column defines the type of task.
- *	0 = Unnested Task, 1 = Nested Task
- *	2 = Milestone, 3 = Deliverable
+ * 	0 = Unnested Task, 1 = Nested Task
+ * 	2 = Milestone, 3 = Deliverable
  * ProjectID: the related project ID
  * InsertUserID: the user who created the task
  * ParentID: the ID of the task this task is nested in
@@ -60,24 +59,47 @@ $Construct->Table('Project')
  * 
  */
 $Construct->Table('Task')
-	->PrimaryKey('TaskID')
-	/*
-	 * 
-	 */
-	->Column('Type', 'int', 0)
-	->Column('ProjectID', 'int', FALSE)
-	->Column('InsertUserID', 'int', FALSE)
-	->Column('ParentID', 'int', TRUE)
-	->Column('Title', 'varchar(50)', TRUE)
-	->Column('Description', 'text', TRUE)
-	->Column('DateInserted', 'date', TRUE)
-	->Column('DateUpdated', 'date', TRUE)
-	->Column('DateDue', 'date', TRUE)
-	/* PREP: Assigned User
-	->Column('AssignUserID','int', FALSE)
-	 */
-	->Set($Explicit, $Drop);
+        ->PrimaryKey('TaskID')
+        /*
+         * 
+         */
+        ->Column('Type', 'int', 0)
+        ->Column('ProjectID', 'int', FALSE)
+        ->Column('InsertUserID', 'int', FALSE)
+        ->Column('ParentID', 'int', TRUE)
+        ->Column('Title', 'varchar(50)', TRUE)
+        ->Column('Description', 'text', TRUE)
+        ->Column('DateInserted', 'date', TRUE)
+        ->Column('DateUpdated', 'date', TRUE)
+        ->Column('DateDue', 'date', TRUE)
+        ->Column('DueTimestamp', 'int', TRUE)
+        /* PREP: Assigned User
+          ->Column('AssignUserID','int', FALSE)
+         */
+        ->Set($Explicit, $Drop);
 
+$PermissionModel = Gdn::PermissionModel();
+
+$PermissionModel->Database = $Database;
+
+$PermissionModel->SQL = $SQL;
+
+// Define some global permissions.
+$PermissionModel->Define(array(
+    'Mocha.Projects.Manage'
+));
+
+// Set the intial member permissions.
+$PermissionModel->Save(array(
+    'RoleID' => 8,
+    'Mocha.Projects.Manage' => 0
+));
+
+// Set the initial administrator permissions.
+$PermissionModel->Save(array(
+    'RoleID' => 16,
+    'Mocha.Projects.Manage' => 1
+));
 // Insert some activity types
 ///  %1 = ActivityName
 ///  %2 = ActivityName Possessive: Username
@@ -87,22 +109,15 @@ $Construct->Table('Task')
 ///  %6 = his/her
 ///  %7 = he/she
 ///  %8 = RouteCode & Route
-
 //Created a new project
 //if ($SQL->GetWhere('ActivityType', array('Name' => 'CreateProject'))->NumRows() == 0)
-   $SQL->Replace('ActivityType',
-	   array('AllowComments' => '1', 'Name' => 'CreateProject', 'FullHeadline' => '%1$s created a %8$s.', 'ProfileHeadline' => '%1$s added a %8$s.', 'RouteCode' => 'project', 'Public' => '1'),
-	   array('Name' => 'CreateProject'));
+$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProject', 'FullHeadline' => '%1$s created a %8$s.', 'ProfileHeadline' => '%1$s added a %8$s.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProject'));
 // Added Task to project
 //if ($SQL->GetWhere('ActivityType', array('Name' => 'CreateProjectTask'))->NumRows() == 0)
-   $SQL->Replace('ActivityType', 
-	   array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'),
-	   array('Name' => 'CreateProjectTask'));
-   
+$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProjectTask'));
+
 //if ($SQL->GetWhere('ActivityType', array('Name' => 'CreateProjectTask'))->NumRows() == 0)
-   $SQL->Replace('ActivityType', 
-	   array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'),
-	   array('Name' => 'CreateProjectTask'));
+$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProjectTask'));
 
 /* PREP: Useful later when users can invite to projects
 if ($SQL->GetWhere('ActivityType', array('Name' => 'JoinInvite'))->NumRows() == 0)

@@ -22,10 +22,8 @@ switch ($this->_ControllerName) {
 
     /* ----------------- Project Controller ----------------------------- */
     case "Project":
-        if ($this->admin) {
-            ?><a href="<? echo $this->HomeLink; ?>task/create/<? echo $this->ViewingProjectID ?>" class="BigButton NewTask Popup">New Task</a><?
-        }
-        ?><div class="Box TaskBox">
+        ?><img class='Project' src='/applications/mocha/design/images/default.jpg' />
+        <div class="Box TaskBox">
             <ul class ="nav nav-tabs nav-stacked">
                 <li><a href='<? echo $this->HomeLink . "project/overview/" . $this->ViewingProjectID ?>'>Overview</a></li>
                 <li><a href='<? echo $this->HomeLink . "project/tasks/" . $this->ViewingProjectID ?>'>Tasks</a></li>
@@ -34,33 +32,14 @@ switch ($this->_ControllerName) {
         </div><?
 // OK, for the task list. Here we go.
         ?><div class="Box TodayBox">
-            <h4><? echo T("Due Today"); ?></h4>
-            <p><? echo $this->Date->format('M d, Y'); ?></p>
-            <ul class="Tasks <? echo $this->TodayTimestamp; ?> nav nav-tabs nav-stacked">
-                <li class="Deliverable Count"><? echo T('Deliverables') . ": " . $this->DeliverablesCount; ?></li>
-                <li class="Milestone Count"><? echo T('Milestones') . ": " . $this->MilestonesCount; ?></li>
-                <li class="Task Count"><? echo T('Tasks') . ": " . $this->TasksCount; ?></li><?
-                ?></ul><?
-            $this->Date->add($this->OneDay);
-            $TomorrowTimestamp = $this->Date->getTimestamp();
-            ?></div>
-        <div class="Box TomrorrowBox">
-
-            <h4><? echo T("Due Tomorrow"); ?></h4>
-            <p><? echo $this->Date->format('M d, Y'); ?></p>
-            <ul class="Tasks TomrorrowTasks">
-                <li><span class="Deliverable Count"><? echo T('Deliverables') . ": " . $this->DeliverablesCount; ?></span>
-                    <span class="Milestone Count"><? echo T('Milestones') . ": " . $this->MilestonesCount; ?></span>
-                    <span class="Task Count"><? echo T('Tasks') . ": " . $this->TasksCount; ?></span>
-                </li><?
-                foreach ($this->_Tasks as $TomorrowTask) {
-                    if ($TomorrowTask->DateInserted < $TomorrowTimestamp) {
-                        echo "<li class='" . $TomorrowTask->TaskID . "'>" . $TomorrowTask->Title . "<span class='Delete'><a href='" . $this->HomeLink . "/task/delete/" . $TomorrowTask->ProjectID . DS . $TomorrowTask->TaskID . "' class='Popup'>x</a></span><br/>";
-                        echo "$TomorrowTask->Timestamp</li>";
-                    }
-                }
-                ?></ul>
-        </div><?
+            <h4><? echo T("Tasks"); ?></h4>
+            <ul class="<? echo $this->TodayTimestamp; ?> nav nav-tabs nav-stacked">
+                <li><a href=''><? echo T('Total: '); ?><span class="Total Count"><? echo $this->TotalCount; ?></span></a></li>
+                <li><a href=''><? echo T('Overdue: '); ?><span class="Overdue Count"><? echo $this->OverdueCount; ?></span></a></li>
+                <li><a href=''><? echo T('Today: '); ?><span class="Today Count"><? echo $this->TodayCount; ?></span></a></li>
+                <li><a href=''><? echo T('Future: '); ?><span class="Future Count"><? echo $this->FutureCount; ?></span></a></li>
+                </ul><?
+            ?></div><?
         break;
 }
 

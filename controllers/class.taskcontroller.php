@@ -57,6 +57,7 @@ class TaskController extends MochaController {
 	    $this->AddCssFile('editor.css');
 
 	    $this->AddCssFile('/applications/mocha/design/project.css');
+            $this->AddCssFile('/applications/mocha/design/task.css');
 	}
 
 	// Call Gdn_Controller's Initialize() as well.
@@ -64,7 +65,7 @@ class TaskController extends MochaController {
     }
 
     public function Create() {
-
+        $this->AddCssFile('task.css');
 	$ProjectID = GetValue(0, $this->RequestArgs, FALSE);
 
 	$Session = Gdn::Session();
@@ -75,31 +76,51 @@ class TaskController extends MochaController {
 
 	$this->Form->SetModel($this->TaskModel);
 	$this->Form->AddHidden("ProjectID", $ProjectID);
+        $this->Today = date('Y-m-d');
+	$this->Date = new DateTime($this->Today);
+        //$this->Form->AddHidden("DateDue", $this->Date);
 
 	if ($this->Form->AuthenticatedPostBack() === FALSE) {
 	    $this->Form->SetFormValue("ProjectID", $ProjectID);
 	    $this->Form->SetFormValue("Title", "New Task");
 	} else {
+            $FormValues = $this->Form->FormValues();
+            $Timestamp = Gdn_Format::ToTimestamp($FormValues['DateDue']);
+            $this->Form->AddHidden("DueTimestamp", $Timestamp);
+            $this->Form->SetFormValue("DueTimestamp", $Timestamp);
 	    if ($this->Form->Save()) {
 		// Create the activity model
 		$this->ActivityModel = new ActivityModel($Validation);
 		// Get the related data
-		$FormValues = $this->Form->FormValues();
+		
 		$User = Gdn::UserModel()->GetID($UserID);
 		$Project = $this->ProjectModel->GetID($ProjectID);
 		$this->ActivityModel->Name = 'Activity';
 		$NewActivityID = $this->TaskModel->AddActivity(
 			$UserID, 'CreateProjectTask', $User->Name." created the task: \"".$FormValues['Title']."\"", '$UserID', '', 'project/' . $ProjectID, FALSE);
 		$Results = $this->ActivityModel->ValidationResults();
-		print_r($Results);
 		$this->InformMessage('Task Saved');
-		//Redirect('/project/'.$ProjectID);
+		Redirect('index.php?p=/project/tasks/'.$ProjectID);
 	    } else {
 		$this->InformMessage('Task Not Saved');
 	    }
 	}
-
-	$this->Render();
+        include_once(PATH_APPLICATIONS.DS.'mocha/views/task/create.php');
+	//$this->Render();
+    }
+    
+    public function PostTask() {
+        
+        $Request = Gdn::Request();
+        $ProjectID = $Request->Post('ProjectID');
+        $TaskType = $Request->Post('Type');
+        
+        $this->ViewingProjectID = $ProjectID;
+        $this->NewTaskType = $TaskType;
+        
+        include_once(PATH_APPLICATIONS.DS.'mocha/views/task/create.php');
+        
+        
     }
 
     public function Delete() {
@@ -107,7 +128,7 @@ class TaskController extends MochaController {
 	$ProjectID = GetValue(0, $this->RequestArgs, NULL);
 	$TaskID = GetValue(1, $this->RequestArgs, NULL);
 	$Task = $this->TaskModel->Get($TaskID);
-        $this->AddJsFile('sidepanel.js');
+        //$this->AddJsFile('sidepanel.js');
 	if ($this->Form->AuthenticatedPostBack() === FALSE) {
             
 	} else {
@@ -155,6 +176,16 @@ class TaskController extends MochaController {
         
     }
     
+    public function NestTask() {
+        
+        $Request = Gdn::Request();
+	$ParentID = $Request->Post('ParentID');
+	$ChildID = $Request->Post('ChildID');
+        
+        $Return = $this->TaskModel->NestTask($ParentID,$ChildID);
+        echo $Return;
+    }
+    
     /**
      * Method for retreiving current project's task data 
      */
@@ -164,7 +195,7 @@ class TaskController extends MochaController {
 	$this->Date = $TodaysDate;
 	
 	// Query data
-	$this->_Tasks = $this->TaskModel->GetWhere(array("t.ProjectID" => $this->ViewingProjectID));
+	$this->_Tasks = $this->TaskModel->GetWhere(array("t.ProjectID" => $this->ViewingProjectID, 'Type >=' => 1));
 	
 	// Select Tasks to show
 	// TODO check to see if we need to offset user timezone
