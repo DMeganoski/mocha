@@ -125,6 +125,7 @@ class TaskController extends MochaController {
         $TaskID = GetValue(1, $this->RequestArgs, FALSE);
         
         $this->Task = $this->TaskModel->Get($TaskID);
+        $this->editing = 1;
         
 	$Validation = new Gdn_Validation();
 	$this->Form = new Gdn_Form(/* $Validation */);

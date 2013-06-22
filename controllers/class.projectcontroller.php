@@ -82,9 +82,7 @@ class ProjectController extends MochaController {
     }
     
     public function Overview() {
-        
-        $this->Initialize();
-	
+        	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	// Get the viewing user ID
 	$Session = Gdn::Session();
@@ -111,7 +109,7 @@ class ProjectController extends MochaController {
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	
-	$this->Method = "Overview";
+	$this->Method = "Timeline";
 
 	$this->AddJsFile('sidepanel.js');
 	$this->AddJsFile('/applications/dashboard/js/activity.js');
@@ -166,7 +164,6 @@ class ProjectController extends MochaController {
 		$ActivityIDs = ConsolidateArrayValuesByKey($ActivityData, 'ActivityID');
 		$this->CommentData = $this->ActivityModel->GetComments($ActivityIDs);
 	    }
-	    $this->View = 'timeline';
 
 	    // Build a pager
 	    $PagerFactory = new Gdn_PagerFactory();
@@ -192,13 +189,16 @@ class ProjectController extends MochaController {
         
         $this->Initialize();
         $this->AddJsFile('jquery-ui-1.10.3.custom.min.js');
-        $this->AddJsFile('tasks.js');
+        $this->AddJsFile('project.tasks.hoverintent.js');
+        $this->AddJsFile('project.tasks.js');
         $this->AddCssFile('task.css');
         $this->AddCssFile('jquery-ui-1.10.3.custom.css');
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	// Get the viewing user ID
 	$Session = Gdn::Session();
+        $this->ViewingProjectID = $RequestedID;
+        $this->UserOffset = $Session->HourOffset();
 	$this->ViewingUserID = $Session->UserID;
 	$this->UserName = $Session->User->Name;
         

@@ -15,9 +15,6 @@ if (!defined('APPLICATION'))
 echo $this->Form->Open();
 echo $this->Form->Errors();
 
-?><style type="text/css">
-</style><?
-
 ?><div class="row">
     <div class="column type"><?
 	echo $this->Form->DropDown("Type", $TypeChoices);
@@ -33,7 +30,10 @@ echo $this->Form->Errors();
 	echo $this->Form->TextBox("Description", array("value"=>"Description"));
     ?></div>
     <div class="column save"><?
-	echo $this->Form->Close("Save");
+    echo $this->Form->Button("Submit", array('value' => 'Save'));
+    if ($this->Editing == 1) {
+    echo $this->Form->Button("Submit", array('value' => 'Cancel'));
+    }
     ?></div>
 </div>
 <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
