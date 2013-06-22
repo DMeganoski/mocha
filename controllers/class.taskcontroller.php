@@ -145,15 +145,7 @@ class TaskController extends MochaController {
             $this->Form->AddHidden("DueTimestamp", $Timestamp);
             $this->Form->SetFormValue("DueTimestamp", $Timestamp);
 	    if ($this->Form->Save()) {
-		// Create the activity model
-		$this->ActivityModel = new ActivityModel($Validation);
-		// Get the related data
 		
-		$User = Gdn::UserModel()->GetID($UserID);
-		$this->ActivityModel->Name = 'Activity';
-		$NewActivityID = $this->TaskModel->AddActivity(
-			$UserID, 'CreateProjectTask', $User->Name." created the task: <a href='".$this->HomeLink."project/task/".$ProjectID."' >\"".$FormValues['Title']."\"</a>", '$UserID', '', 'project/' . $ProjectID, FALSE);
-		$Results = $this->ActivityModel->ValidationResults();
 		$this->InformMessage('Task Saved');
 		Redirect('index.php?p=/project/tasks/'.$ProjectID);
 	    } else {

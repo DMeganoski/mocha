@@ -25,7 +25,7 @@ $(document).ready(function() {
     
     
     console.log('Script Loaded');
-    $('ul.TaskList').updateTasks(today);
+    //$('ul.TaskList').updateTasks(today);
     //$.datepicker.formatDate( "yy-mm-dd", new Date( 2007, 1 - 1, 26 ) );
     //$( "#datepicker" ).datepicker();
     $( "#datepicker" ).click(function() {

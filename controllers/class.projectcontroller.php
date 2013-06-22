@@ -201,6 +201,8 @@ class ProjectController extends MochaController {
 	$Session = Gdn::Session();
 	$this->ViewingUserID = $Session->UserID;
 	$this->UserName = $Session->User->Name;
+        
+        $this->_Tasks = $this->TaskModel->GetWhere(array("t.ProjectID" => $RequestedID, 'Type >=' => 1));
 
 
 	// Create and Configure the side module
