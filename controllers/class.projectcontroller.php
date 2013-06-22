@@ -45,7 +45,7 @@ class ProjectController extends MochaController {
 	    $this->AddJsFile('jquery.livequery.js');
 	    $this->AddJsFile('jquery.form.js');
 	    $this->AddJsFile('jquery.popup.js');
-	    $this->AddJsFile('jquery.gardenhandleajaxform.js');
+            $this->AddJsFile('jquery.gardenhandleajaxform.js');
 	    $this->AddJsFile('global.js');
 	    $this->AddCssFile('style.css');
 	    $this->AddCssFile('custom.css');
@@ -194,6 +194,7 @@ class ProjectController extends MochaController {
         $this->AddJsFile('jquery-ui-1.10.3.custom.min.js');
         $this->AddJsFile('tasks.js');
         $this->AddCssFile('task.css');
+        $this->AddCssFile('jquery-ui-1.10.3.custom.css');
 	
 	$RequestedID = GetValue(0, $this->RequestArgs, FALSE);
 	// Get the viewing user ID
@@ -212,6 +213,7 @@ class ProjectController extends MochaController {
 	$this->AddJsFile('sidepanel.js');
         
         $this->ViewingProjectID = $RequestedID;
+        $this->Project = $this->ProjectModel->Get($RequestedID);
         
         $this->Tasks = $this->TaskModel->GetWhere("ProjectID", $RequestedID);
         
@@ -237,8 +239,11 @@ class ProjectController extends MochaController {
 		$FormValues = $this->Form->FormValues();
 		$this->ActivityModel = new ActivityModel($Validation);
 		$this->ActivityModel->Name = 'Activity';
-		$NewActivityID = $this->TaskModel->AddActivity(
-			$UserID, 'CreateProject', $Session->User->Name.' created the '.$FormValues['Title'].' project.', '$UserID', '', 'project/' . $FormValues['ProjectID'], FALSE);
+		$User = Gdn::UserModel()->GetID($UserID);
+		$Project = $FormValues['ProjectID'];
+		$this->ActivityModel->Name = 'Activity';
+		$NewActivityID = $this->ProjectModel->AddActivity(
+			$UserID, 'CreateProject', $User->Name." created the project: \"".$FormValues['Title']."\"", '$UserID', '', 'project/' . $ProjectID, FALSE);
 		$Results = $this->ActivityModel->ValidationResults();
 		print_r($Results);
 		$this->InformMessage("Changes Saved");

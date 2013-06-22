@@ -97,6 +97,46 @@ class ProjectModel extends Gdn_Model {
 	}
     }
     
+    public function AddActivity($ActivityUserID, $ActivityType, $Story = '', $RegardingUserID = '', $CommentActivityID = '', $Route = '', $SendEmail = '') {
+        // Build the story for the activity.
+        $ProjectData = $this->Get($ProjectID);
+        $ProjectName = $ProjectData->Title;
+        //$Story = sprintf(T('Added Task: %s, Source: %s'), $ProjectName, $ProjectName);
+
+        $ActivityTypeRow = $this->SQL
+                ->Select('ActivityTypeID, Name, Notify')
+                ->From('ActivityType')
+                ->Where('Name', $ActivityType)
+                ->Get()
+                ->FirstRow();
+
+        $ActivityTypeID = $ActivityTypeRow->ActivityTypeID;
+
+        $Fields = array('ActivityTypeID' => $ActivityTypeID,
+            'ActivityUserID' => $ActivityUserID
+        );
+        if ($Story != '')
+            $Fields['Story'] = $Story;
+
+        if ($Route != '')
+            $Fields['Route'] = $Route;
+
+        if (is_numeric($RegardingUserID))
+            $Fields['RegardingUserID'] = $RegardingUserID;
+
+        if (is_numeric($CommentActivityID))
+            $Fields['CommentActivityID'] = $CommentActivityID;
+
+        if (!isset($Fields['DateInserted']))
+            $Fields['DateInserted'] = Gdn_Format::ToDateTime();
+
+
+        $ID = $this->SQL->Insert('Activity', $Fields);
+        //$ActivityModel = new ActivityModel();
+        //$ActivityModel->Add(Gdn::Session()->UserID, 'CreateProjectTask', $Story);
+        return $ID;
+    }
+    
     public function GetActivity($ProjectID) {
 	$Route = "project/".$ProjectID;
 	

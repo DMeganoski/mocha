@@ -1,13 +1,13 @@
 <?php if(!defined('APPLICATION')) exit();
-$this->Now = date('Y-m-d');
-$this->Date = new DateTime($this->Now);
-$TodayTimestamp = $this->Date->getTimestamp();
-$this->OneDay = new DateInterval("P1D");
-$this->Date->add($this->OneDay);
-$TomorrowTimestamp = $this->Date->getTimestamp();
+$Date = new DateTime(date('Y-m-d'));
+$TodayTimestamp = $Date->getTimestamp();
+$OneDay = new DateInterval("P1D");
+$Date->add($OneDay);
+$TomorrowTimestamp = $Date->getTimestamp();
 
-?><h1>Project Tasks</h1>
+?><h1><? echo $this->Project->Title; ?></h1>
+<h2 class="page-subheader">Task Tracker</h2>
 <div id="TaskFormBox" style="display:none;"></div>
-<ul class="DataList TaskList"><div class='Loading'></div></ul>
+<div id="accordion" class="TaskList"><div class='Loading'></div></div>
 <div id="JsInfo" style="display:none"  projectID="<? echo $this->ViewingProjectID ?>" today="<? echo $TodayTimestamp ?>" tomrorrow="<? echo $TomorrowTimestamp ?>" userID="<? echo $this->ViewingUserID; ?>"></div>
 

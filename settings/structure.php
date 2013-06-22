@@ -114,10 +114,9 @@ $PermissionModel->Save(array(
 $SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProject', 'FullHeadline' => '%1$s created a %8$s.', 'ProfileHeadline' => '%1$s added a %8$s.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProject'));
 // Added Task to project
 //if ($SQL->GetWhere('ActivityType', array('Name' => 'CreateProjectTask'))->NumRows() == 0)
-$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProjectTask'));
+$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '0'), array('Name' => 'CreateProjectTask'));
 
 //if ($SQL->GetWhere('ActivityType', array('Name' => 'CreateProjectTask'))->NumRows() == 0)
-$SQL->Replace('ActivityType', array('AllowComments' => '1', 'Name' => 'CreateProjectTask', 'FullHeadline' => '%1$s created a task for a %8$s.', 'ProfileHeadline' => '%1$s created a %8$s for.', 'RouteCode' => 'project', 'Public' => '1'), array('Name' => 'CreateProjectTask'));
 
 /* PREP: Useful later when users can invite to projects
 if ($SQL->GetWhere('ActivityType', array('Name' => 'JoinInvite'))->NumRows() == 0)

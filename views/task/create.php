@@ -1,8 +1,8 @@
 <?php
 if ($this->editing == 1) {
-    $TypeChoices = array(1 => 'Task', 2 => 'Milestone', 3 => 'Deliverable');
+    $TypeChoices = array(0 => 'Nested',1 => 'Task', 2 => 'Milestone', 3 => 'Deliverable');
 } else {
-    $TypeChoices = array(0 => 'Nested', 1 => 'Task', 2 => 'Milestone', 3 => 'Deliverable');
+    $TypeChoices = array(1 => 'Task', 2 => 'Milestone', 3 => 'Deliverable');
 
 }
 if (!defined('APPLICATION'))

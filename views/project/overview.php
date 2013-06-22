@@ -8,7 +8,20 @@ $Project = $this->Project;
 $DateInserted = new DateTime($this->Project->DateInserted);
 $DateUpdated = new DateTime($this->Project->DateUpdated);
 
-?><h1><? echo $Project->Title; ?></h1>
+?><h1><? 
+echo $Project->Title; 
+?></h1>
+<div class="Options pull-right">
+                <span class="ToggleFlyout OptionsMenu">
+                    <span class="btn btn-mini" title="Options">Options</span>
+                    <span class="SpFlyoutHandle"></span>
+                    <ul class="Flyout dropdown-menu">
+                        <li><a class='' href='index.php?p=/project/edit/<? echo $this->Project->ProjectID; ?>'>Edit</a></li>
+                        <li><a class='' href='index.php?p=/project/delete/<? echo $this->Project->ProjectID; ?>'>Delete</a></li>
+                    </ul>
+                </span>
+                <a class="Hijack Bookmark" title="Bookmark" href="/index.php?p=/project/bookmark/<? echo $this->Project->ProjectID; ?>"></a>
+            </div>
 <ul class='DataList'>
     <li class='Item'>
         <div class='ItemContent'>

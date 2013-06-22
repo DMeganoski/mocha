@@ -12,7 +12,7 @@ class TaskModel extends Gdn_Model {
     }
 
     public function Query() {
-        
+
         $this->SQL->Select("t.*")
                 ->From("Task t");
     }
@@ -23,10 +23,8 @@ class TaskModel extends Gdn_Model {
      * @param type $ID Requested TaskID, optional.
      * @return type 
      */
-    public function Get($ID = FALSE) {
-        
-        
-        
+    public function Get($ID = FALSE, $Sort = 'DueTimestamp') {
+
         $this->Query();
         if (!$ID) {
             $AllProjects = $this->SQL->Get();
@@ -39,7 +37,7 @@ class TaskModel extends Gdn_Model {
         }
     }
 
-    public function GetWhere($Column, $Value = NULL) {
+    public function GetWhere($Column, $Value = NULL, $SortField = 'DueTimestamp', $SortDirection = "asc") {
         $this->Query();
         if (is_array($Column)) {
             foreach ($Column as $Col => $Val) {
@@ -50,6 +48,7 @@ class TaskModel extends Gdn_Model {
                 $this->SQL->Where($Column, $Value);
             }
         }
+        $this->SQL->OrderBy($SortField, $SortDirection);
         $Return = $this->SQL->Get();
         return $Return;
     }
@@ -64,44 +63,52 @@ class TaskModel extends Gdn_Model {
     public function CountTasks($ProjectID = NULL, $Timestamp = 0, $Direction = 2) {
 
         if ($ProjectID !== NULL) {
-            switch($Direction) {
+            switch ($Direction) {
                 case 0: // Overdue
                     $Return = $this->SQL->Select('t.TaskID', 'count', 'CountItems')
-                        ->From('Task t')
-                        ->Where('ProjectID', $ProjectID)
-                        ->Where("DueTimestamp <=", $Timestamp - 1)
-                        ->Where("DueTimestamp >=", 1)
-                        ->Get()->FirstRow()->CountItems;
+                                    ->From('Task t')
+                                    ->Where('ProjectID', $ProjectID)
+                                    ->Where("DueTimestamp <=", $Timestamp - 1)
+                                    ->Where("DueTimestamp >=", 1)
+                                    ->Get()->FirstRow()->CountItems;
                     break;
                 case 1: // Today
                     $Return = $this->SQL->Select('t.TaskID', 'count', 'CountItems')
-                            ->From('Task t')
-                            ->Where("DueTimestamp >=", $Timestamp)
-                            ->Where("DueTimestamp <=", $Timestamp + (24*60*60) - 1)
-                            ->Where('ProjectID',$ProjectID)
-                            //->Where("DueTimestamp >=", 1)
-                            ->Get()->FirstRow()->CountItems;
+                                    ->From('Task t')
+                                    ->Where("DueTimestamp >=", $Timestamp)
+                                    ->Where("DueTimestamp <=", $Timestamp + (24 * 60 * 60) - 1)
+                                    ->Where('ProjectID', $ProjectID)
+                                    //->Where("DueTimestamp >=", 1)
+                                    ->Get()->FirstRow()->CountItems;
                     break;
                 case 2: // Future TODO: Should I include today's? Hmmm...
                     $Return = $this->SQL->Select('t.TaskID', 'count', 'CountItems')
-                            ->From('Task t')
-                            ->Where("DueTimestamp >=", $Timestamp)
-                            ->Where('ProjectID',$ProjectID)
-                            //->Where("DueTimestamp >=", 1)
-                            ->Get()->FirstRow()->CountItems;
+                                    ->From('Task t')
+                                    ->Where("DueTimestamp >=", $Timestamp)
+                                    ->Where('ProjectID', $ProjectID)
+                                    //->Where("DueTimestamp >=", 1)
+                                    ->Get()->FirstRow()->CountItems;
                     break;
                 case 3: // Both Directions (all)
                 default:
-                   $Return = $this->SQL->Select('t.TaskID', 'count', 'CountItems')
-                            ->From('Task t')
-                            ->Where('ProjectID',$ProjectID)
-                            ->Get()->FirstRow()->CountItems;
+                    $Return = $this->SQL->Select('t.TaskID', 'count', 'CountItems')
+                                    ->From('Task t')
+                                    ->Where('ProjectID', $ProjectID)
+                                    ->Get()->FirstRow()->CountItems;
                     break;
             }
             return $Return;
         } else {
             return 999;
         }
+    }
+
+    public function CountChildren($ParentID) {
+        // TODO: add verification to count children
+        return $this->SQL->Select('t.TaskID', 'count', 'CountItems')
+                        ->From('Task t')
+                        ->Where('ParentID', $ParentID)
+                        ->Get()->FirstRow()->CountItems;
     }
 
     public function Update($Set, $Where = FALSE) {
@@ -125,7 +132,7 @@ class TaskModel extends Gdn_Model {
      * @return type
      */
     public function Delete($TaskID, $ProjectID = NULL) {
-        
+
         if ($ProjectID != NULL) {
             $Return = $this->SQL->Delete('Task', array('ProjectID' => $ProjectID));
         } else {
@@ -134,19 +141,19 @@ class TaskModel extends Gdn_Model {
         return $Return;
     }
 
-    /*public function GetWhereGreater($ProjectID, $Timestamp) {
-        
-       
+    /* public function GetWhereGreater($ProjectID, $Timestamp) {
 
-        $Return = $this->SQL->Query(
-                "SELECT * FROM GDN_Task
-                WHERE ProjectID = $ProjectID 
-                and (`DateDue` >= $Timestamp)
-                ORDER BY DateDue asc"
-                )->Get()->FirstRow()->CountItems;
-        
-        return $Return;
-    }*/
+
+
+      $Return = $this->SQL->Query(
+      "SELECT * FROM GDN_Task
+      WHERE ProjectID = $ProjectID
+      and (`DateDue` >= $Timestamp)
+      ORDER BY DateDue asc"
+      )->Get()->FirstRow()->CountItems;
+
+      return $Return;
+      } */
 
     /* ---------------------------- Functional Methods --------------------- */
 
@@ -158,17 +165,17 @@ class TaskModel extends Gdn_Model {
         // check to see the parent isn't currently a child
         $ParentData = $this->SQL->Where("TaskID", $ParentID)->Get()->FirstRow();
         if ($ParentData->Type != 0 && $ParentData->Type != 1) {
-            $Return = $this->SQL->Update('Task')
+            $this->SQL->Update('Task')
                     // set fields
                     ->Set('ParentID', $ParentID)
                     ->Set('Type', 0)
                     // where
                     ->Where('TaskID', $ChildID)->Put();
-           
-            
-           return $Return;
+
+
+            //return $Return;
         } else {
-           return 'Nope';
+            //return 'Nope';
         }
     }
 

@@ -19,21 +19,27 @@ root {
     display: inline-block;
     float: left;
 }
+div.children  {
+    display: block;
+    width: auto;
+    clear: both;
+}
 .type, select#Form_Type {
     width: 120px;
 }
 .title, input#Form_Title {
     width: 200px;
 }
-.description {
+div.description {
     width: 30%;
     min-width: 150px;
 }
+p.description {
+    float: left;
+    margin: 10px 0 0 40px;
+}
 input#Form_Description {
     width: 100%;
-}
-.due {
-    width: 270px;
 }
 .save {
     width: 50px;
@@ -51,8 +57,89 @@ div.column .Buttons {
 #TaskFormBox {
     background: url("/themes/apptastic/src/images/toolbar-bg.png") repeat scroll 0% 0% rgb(244, 244, 244);
     padding: 10px 0px 0px 20px;
+    border-radius: 5px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
-span.Delete {
+span.Delete, span.edit {
+    float: right;
+    font-size: 120%;
+    font-weight: bold;
+    margin: 0px 0px 0px 10px;
     float: right;
     vertical-align: top;
+}
+span.Delete a {
+    color: rgba(0, 0, 0, 0.1);
+}
+div.draggable {
+    cursor: move;
+}
+div.children {
+    margin-left: 20px;
+}
+div.children div.child {
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+div.TaskType {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 10px;
+}
+
+div.type2 .TaskType {
+    background: #e24855;
+}
+div.type3 .TaskType {
+    background:#e9ea5d;
+}
+div.type1 .TaskType,
+div.type0 .TaskType {
+    background: #3ed64b;
+}
+h5.Title {
+    /*background: url("/themes/apptastic/src/images/toolbar-bg.png") repeat scroll 0% 0% rgb(244, 244, 244);*/
+    border-radius: 3px;
+    padding: 5px;
+}
+.Datalist h5.Title span.Title {
+    display: inline-block;
+}
+.parent {
+    cursor: pointer;
+}
+/* --- Tasks Section --- */
+.taskContent {
+    overflow: visible;
+}
+.taskContent .Options {
+    margin: 10px;
+}
+span.Due {
+    width: 20px;
+    float: right;
+    margin: 0px 5px 3px 0px;
+    border-radius: 3px;
+    padding: 0 5px 0 5px;
+}
+span.DueDate {
+    clear: both;
+    display: block;
+    text-align: right;
+    margin: 0 10px 0 0;
+}
+span.Today {
+    background: none repeat scroll 0% 0%;
+    background-color: #e9ea5d;
+    color: #777777;
+}
+span.Overdue {
+    background: none repeat scroll 0% 0%;
+    background-color: #e86161;
+    color: #777777;
+}
+span.Future {
+    background: none repeat scroll 0% 0%;
+    background-color: #3ed64b;
+    color: #777777;
 }

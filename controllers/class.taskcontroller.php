@@ -59,6 +59,12 @@ class TaskController extends MochaController {
 	    $this->AddCssFile('/applications/mocha/design/project.css');
             $this->AddCssFile('/applications/mocha/design/task.css');
 	}
+        
+        if (C('Garden.RewriteUrls')) {
+            $this->HomeLink = "/";
+        } else {
+            $this->HomeLink = "/index.php?p=/";
+        }
 
 	// Call Gdn_Controller's Initialize() as well.
 	parent::Initialize();
@@ -94,10 +100,59 @@ class TaskController extends MochaController {
 		// Get the related data
 		
 		$User = Gdn::UserModel()->GetID($UserID);
-		$Project = $this->ProjectModel->GetID($ProjectID);
 		$this->ActivityModel->Name = 'Activity';
 		$NewActivityID = $this->TaskModel->AddActivity(
-			$UserID, 'CreateProjectTask', $User->Name." created the task: \"".$FormValues['Title']."\"", '$UserID', '', 'project/' . $ProjectID, FALSE);
+			$UserID, 'CreateProjectTask', $User->Name." created the task: <a href='".$this->HomeLink."project/task/".$ProjectID."' >\"".$FormValues['Title']."\"</a>", '$UserID', '', 'project/' . $ProjectID, FALSE);
+		$Results = $this->ActivityModel->ValidationResults();
+		$this->InformMessage('Task Saved');
+		Redirect('index.php?p=/project/tasks/'.$ProjectID);
+	    } else {
+		$this->InformMessage('Task Not Saved');
+	    }
+	}
+        include_once(PATH_APPLICATIONS.DS.'mocha/views/task/create.php');
+	//$this->Render();
+    }
+    
+    public function Edit() {
+        $this->AddCssFile('task.css');
+	
+
+	$Session = Gdn::Session();
+	$UserID = $Session->UserID;
+        
+        $ProjectID = GetValue(0, $this->RequestArgs, FALSE);
+        $TaskID = GetValue(1, $this->RequestArgs, FALSE);
+        
+        $this->Task = $this->TaskModel->Get($TaskID);
+        
+	$Validation = new Gdn_Validation();
+	$this->Form = new Gdn_Form(/* $Validation */);
+
+	$this->Form->SetModel($this->TaskModel);
+	$this->Form->AddHidden("ProjectID", $ProjectID);
+        $this->Form->SetData($this->Task);
+        $this->Today = date('Y-m-d');
+	$this->Date = new DateTime($this->Today);
+        //$this->Form->AddHidden("DateDue", $this->Date);
+
+	if ($this->Form->AuthenticatedPostBack() === FALSE) {
+	    $this->Form->SetFormValue("ProjectID", $ProjectID);
+	    $this->Form->SetFormValue("Title", "New Task");
+	} else {
+            $FormValues = $this->Form->FormValues();
+            $Timestamp = Gdn_Format::ToTimestamp($FormValues['DateDue']);
+            $this->Form->AddHidden("DueTimestamp", $Timestamp);
+            $this->Form->SetFormValue("DueTimestamp", $Timestamp);
+	    if ($this->Form->Save()) {
+		// Create the activity model
+		$this->ActivityModel = new ActivityModel($Validation);
+		// Get the related data
+		
+		$User = Gdn::UserModel()->GetID($UserID);
+		$this->ActivityModel->Name = 'Activity';
+		$NewActivityID = $this->TaskModel->AddActivity(
+			$UserID, 'CreateProjectTask', $User->Name." created the task: <a href='".$this->HomeLink."project/task/".$ProjectID."' >\"".$FormValues['Title']."\"</a>", '$UserID', '', 'project/' . $ProjectID, FALSE);
 		$Results = $this->ActivityModel->ValidationResults();
 		$this->InformMessage('Task Saved');
 		Redirect('index.php?p=/project/tasks/'.$ProjectID);
@@ -166,12 +221,13 @@ class TaskController extends MochaController {
         
         $Request = Gdn::Request();
 	$ProjectID = $Request->Post('ProjectID');
-        $TimeStamp = $Request->Post('TimeStamp');
+        $Timestamp = $Request->Post('Timestamp');
+        $UserID = $Request->Post('UserID');
         
         $this->ViewingProjectID = $ProjectID;
-        $this->_CountTasks($TimeStamp);
-	$this->_GetTasks($TimeStamp);
-	$this->_GetTimes($TimeStamp);
+        $this->_CountTasks($Timestamp);
+	$this->_GetTasks($Timestamp);
+	$this->_GetTimes($Timestamp);
         include_once(PATH_APPLICATIONS.DS."mocha/views/task/tasklist.php");
         
     }
@@ -189,7 +245,7 @@ class TaskController extends MochaController {
     /**
      * Method for retreiving current project's task data 
      */
-    private function _GetTasks($TimeStamp) {
+    private function _GetTasks($Timestamp) {
 	// Get current date / time
 	$TodaysDate = time(); // Timestamp format
 	$this->Date = $TodaysDate;

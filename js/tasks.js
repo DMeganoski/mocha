@@ -7,10 +7,10 @@ $(document).ready(function() {
     tomorrow = $('#JsInfo').attr('tomrorrow');
     
     
-    jQuery.fn.updateTasks = function(timeStamp) {
-        $.post("index.php?p=/task/gettasks", {UserID: userID, ProjectID: projectID, TimeStamp: timeStamp},
+    jQuery.fn.updateTasks = function(timestamp) {
+        $.post("index.php?p=/task/gettasks", {UserID: userID, ProjectID: projectID, Timestamp: timestamp},
             function (data) {
-                $('ul.TaskList').html(data);
+                $('div.TaskList').html(data);
             }
         );
     };
@@ -21,7 +21,7 @@ $(document).ready(function() {
         });
     };
     
-    $("h1.page-header").append("<div class='pull-right'><button class='Button TestButton' onclick=\"$('#TaskFormBox').newTask(projectID);\"><span class='Sprite SpEditProfile'></span>New Task</button></div>");
+    $("h1.page-header").append("<div class='pull-right'><button class='Button NewTask' onclick=\"$('#TaskFormBox').newTask(projectID);\"><span class='Sprite SpEditProfile'></span>New Task</button></div>");
     
     
     console.log('Script Loaded');
