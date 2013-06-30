@@ -172,9 +172,20 @@ class TaskController extends MochaController {
     }
 
     public function Delete() {
-
+        
 	$ProjectID = GetValue(0, $this->RequestArgs, NULL);
 	$TaskID = GetValue(1, $this->RequestArgs, NULL);
+                
+        // Create and Configure the side module
+        $SideModule = new ProjectsSideModule();
+        $SideModule->ViewingProjectID = $ProjectID;
+        $SideModule->SetView('Task', 'Delete');
+
+        // Add the module
+        $this->AddModule($SideModule);
+        $this->AddJsFile('sidepanel.js');
+        
+        $this->AddModule($SideModule);
 	$Task = $this->TaskModel->Get($TaskID);
         //$this->AddJsFile('sidepanel.js');
 	if ($this->Form->AuthenticatedPostBack() === FALSE) {
@@ -188,6 +199,7 @@ class TaskController extends MochaController {
 	    if ($Verify == "Delete") {
 		$this->TaskModel->Delete($TaskID);
 		$this->InformMessage("Task Deleted");
+                Redirect('/project/tasks/'.$ProjectID);
 	    } else {
 		$this->InformMessage("Delete Canceled");
 	    }

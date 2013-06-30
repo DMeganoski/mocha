@@ -1,18 +1,35 @@
 <?php
 if (!defined('APPLICATION'))
     exit();
-$Date = new DateTime(date("Y-m-d\TH:i:sO"));
-$UTCTimestamp = $Date->getTimestamp();
-$UserTimestamp = $UTCTimestamp + ($this->UserOffset * 3600);
-//$OneDay = new DateInterval("P1D");
-//$Date->add($OneDay);
-//$TomorrowTimestamp = $Date->getTimestamp();
-echo $UTCTimestamp;
-echo "<br/>";
-echo $UserTimestamp;
 ?><h1><? echo $this->Project->Title; ?></h1>
 <h2 class="page-subheader">Task Tracker</h2>
-<div id="TaskFormBox" style="display:none;"></div>
+<div id="TaskFormBox" style="display:none;"><?
+    $TypeChoices = array(1 => 'Task', 2 => 'Milestone', 3 => 'Deliverable');
+
+    echo $this->Form->Open();
+    echo $this->Form->Errors();
+    ?><div class="row">
+        <div class="column type"><?
+    echo $this->Form->DropDown("Type", $TypeChoices);
+    ?></div>
+        <div class="column title"><?
+            echo $this->Form->TextBox("Title", array("value" => "Title"));
+            ?></div>
+        <div class="column due"><?
+            echo $this->Form->TextBox("FakeDate");
+            echo $this->Form->TextBox("DateDue", array("style" => "display:none;"));
+            ?></div>
+        <div class="column description"><?
+            echo $this->Form->TextBox("Description", array("value" => "Description"));
+            ?></div>
+        <div class="column save"><?
+            echo $this->Form->Close("Save");
+            if ($this->Editing == 1) {
+                echo $this->Form->Button("Submit", array('value' => 'Cancel'));
+            }
+            ?></div>
+    </div><?
+            ?></div>
 <div class='taskContent'>
     <div class='InfoBoxContainer'>
         <div class='InfoBox'><?
@@ -28,114 +45,48 @@ echo $UserTimestamp;
             echo "<h5>Milestones: </h5>4";
             ?></div>
     </div>
+
 </div>
-<div id="accordion" class="TaskList"><?
-    /* ------------------------------ Task List ----------------------------- */
+<h2>Today</h2>
+<div id="accordionToday" class="TaskList"><?
+            /* ------------------------------ Task List ----------------------------- */
 // Clear the number of top-level tasks
-    $ParentCount = 0;
+            $ParentCount = 0;
 // Start loop for parents
-    foreach ($this->_Tasks as $Task) {
-        // Add one to the count, used for multiple accordions
-        $ParentCount = $ParentCount + 1;
-        switch ($Task->Type) {
-            case 0: // Nested Task
-            case 1: // Unnested Task
-                $Class = 'draggable';
-                break;
-            case 2: // Milestone
-            case 3: // Deliverable
-                $Class = 'droppable';
-                break;
-        }
-        ?><div id='<? echo $Task->TaskID; ?>' class='task group parent <? echo $Class ?> type<? echo $Task->Type; ?>'>
-            <h5 class='Title'>
-                <div class='TaskType' src='<? echo PATH_APPLICATIONS . DS; ?>mocha/design/images/tasktype/<? echo $Task->Type; ?>.jpg'></div>
-                <span class='Title'><? echo $Task->Title; ?></span>
-                <span class='Due' timestamp='<? echo $Task->DueTimestamp; ?>'></span>
-            </h5>
-            <div class='taskContent' id ='content<? echo $Task->TaskID; ?>'><?
-                /* -----------------Task Content Box ------------------------ */
-                ?><div id='taskEdit' style="display:none"><?
-                $Validation = new Gdn_Validation();
-                $this->Form = new Gdn_Form(/* $Validation */);
+            foreach ($this->_TodayTasks as $Task) {
+                include PATH_APPLICATIONS . "/mocha/views/project/tasklist.php";
+            }
+            if ($ParentCount < 0) {
+                ?><div class='group'>
+                    <h5>
+                        <div class='TaskType'></div>
+                        <span class='Title'>No Tasks Due Today</span>
+                    </h5>
+                </div><?
+            }
+            ?></div>
+<h2>Overdue</h2>
+<div id="accordionOverdue" class="TaskList"><?
+            /* ------------------------------ Task List ----------------------------- */
+// Clear the number of top-level tasks
+// Start loop for parents
+            foreach ($this->_OverdueTasks as $Task) {
+                include PATH_APPLICATIONS . "/mocha/views/project/tasklist.php";
+            }
+            ?></div>
+<h2>Future</h2>
+<div id="accordionFuture" class="TaskList"><?
+            /* ------------------------------ Task List ----------------------------- */
+// Start loop for parents
+            foreach ($this->_FutureTasks as $Task) {
+                include PATH_APPLICATIONS . "/mocha/views/project/tasklist.php";
+            }
+            ?></div>
+<div id="JsInfo" 
+     style="display:none"  
+     projectID="<? echo $this->ViewingProjectID ?>" 
+     userTimestamp="<? echo $this->UserTimestamp ?>" 
+     userID="<? echo $this->ViewingUserID; ?>"
+     parentCount="<? echo $ParentCount; ?>">
+</div>
 
-                $this->Form->SetModel($this->TaskModel);
-                $this->Form->AddHidden("ProjectID", $this->ViewingProjectID);
-                $this->Form->SetData($Task);
-                $this->Today = date('Y-m-d');
-                $this->Date = new DateTime($this->Today);
-                //$this->Form->AddHidden("DateDue", $this->Date);
-
-                if ($this->Form->AuthenticatedPostBack() === FALSE) {
-                    $this->Form->SetFormValue("ProjectID", $this->ViewingProjectID);
-                } else {
-                    $FormValues = $this->Form->FormValues();
-                    $Timestamp = Gdn_Format::ToTimestamp($FormValues['DateDue']);
-                    $this->Form->AddHidden("DueTimestamp", $Timestamp);
-                    $this->Form->SetFormValue("DueTimestamp", $Timestamp);
-                    if ($this->Form->Save()) {
-
-                        $this->InformMessage('Task Saved');
-                        Redirect('index.php?p=/project/tasks/' . $this->ViewingProjectID);
-                    } else {
-                        $this->InformMessage('Task Not Saved');
-                    }
-                }
-                include_once(PATH_APPLICATIONS . DS . 'mocha/views/task/create.php');
-                ?></div>
-                <p class="description"><? echo $Task->Description; ?></p>
-                <span class="Options">
-                    <span class="ToggleFlyout OptionsMenu">
-                        <span class="btn btn-mini" title="Options">Options</span>
-                        <span class="SpFlyoutHandle"></span>
-                        <ul class="Flyout dropdown-menu">
-                            <li><button class='edit<? echo $Task->TaskID ?>' onclick="$('.edit<? echo $Task->TaskID ?>').editTask(<? echo $Task->TaskID; ?>);" taskid="<? echo $Task->TaskID ?>">Edit</a></li>
-                            <li><a class='delete' href='index.php?p=/task/delete/<? echo $Task->ProjectID . DS . $Task->TaskID; ?>'>Delete</a></li>
-                        </ul>
-                    </span>
-                </span>
-                <span class='DueDate' timestamp='<? echo $Task->DueTimestamp; ?>'>Due: <? echo $Task->DateDue . " - " . $Task->DueTimestamp; ?></span><?
-                // Now for child elements, still inside item content (folding) of the parent
-
-                $Children = $this->TaskModel->GetWhere('ParentID', $Task->TaskID);
-                if ($this->TaskModel->CountChildren($Task->TaskID) >= 1) {
-                    ?><div id="accordion<? echo $ParentCount; ?>" class="children"><?
-                    $ChildrenCount = 0;
-                    foreach ($Children as $Child) {
-                        $ChildrenCount + 1;
-                        ?><div id = '<? echo $Child->TaskID; ?>' class = 'task group child draggable type<? echo $Child->Type; ?>'>
-                                <h5 class = 'Title'>
-                                    <div class = 'TaskType' src ='<? echo PATH_APPLICATIONS . DS; ?>mocha/design/images/tasktype/<? echo $Child->Type; ?>.jpg'></div>
-                                    <span class = 'Title'><? echo $Child->Title; ?></span>
-                                    <span class='Due' timestamp='<? echo $Child->DueTimestamp; ?>'></span>
-                                </h5>
-                                <div class='taskContent'>
-                                    <p class="description"><? echo $Child->Description; ?></p>
-                                    <span class="Options">
-                                        <span class="ToggleFlyout OptionsMenu">
-                                            <span class="btn btn-mini" title="Options">Options</span>
-                                            <span class="SpFlyoutHandle"></span>
-                                            <ul class="Flyout dropdown-menu">
-                                                <li><a class='edit' onclick="$(this).editTask(<? echo $Child->TaskID ?>)" taskid="<? echo $Child->TaskID ?>">Edit</a></li>
-                                                <li><a class='delete' href='index.php?p=/task/delete/<? echo $Child->ProjectID . DS . $Child->TaskID; ?>'>Delete</a></li>
-                                            </ul>
-                                        </span>
-                                    </span>
-                                    <span class='DueDate' timestamp='<? echo $Child->DueTimestamp; ?>'>Due: <? echo $Child->DateDue; ?></span>
-                                </div>
-                            </div><?
-                        }
-                        ?></div><?
-                    // End Child Box
-                } // no children
-                ?></div>
-        </div><?
-        // End of first task box
-    }
-    ?>
-    <div id="JsInfo" 
-         style="display:none"  
-         projectID="<? echo $this->ViewingProjectID ?>" 
-         userTimestamp="<? echo $UserTimestamp ?>" 
-         userID="<? echo $this->ViewingUserID; ?>"
-         parentCount="<? echo $ParentCount; ?>"></div>   

@@ -16,19 +16,26 @@ $(document).ready(function() {
      };*/
     
     $.fn.newTask = function(projectID) {
-        $.get('index.php?p=/task/create/' + projectID, function(data) {
+        /*$.get('index.php?p=/task/create/' + projectID, function(data) {
             $('#TaskFormBox').html(data);
             $('#TaskFormBox').slideDown(300);
-        });
+        });*/
+        $('#TaskFormBox').slideDown(300);
     };
-    $.fn.editTask = function(taskID) {
-        //$.post('index.php?p=/task/edit/', {"TaskID" : taskID}, 
-        //function(data) {
+    $.fn.editTask = function(projectID, taskID) {
+        /*$.post('index.php?p=/task/edit/'+projectID+"/"+taskID, {},
+        function(data) {
             //taskContent.hide();
-            $("#content" + taskID).next('#editTask').show();
-        //});
+            $("#content" + taskID).html(data);
+        });*/
     };
-    
+    $.fn.completeTask = function(projectID, taskID) {
+        $.post('index.php?p=/task/complete/', { "ProjectID" : projectID, "TaskID" : taskID },
+        function(data) {
+            
+        });
+    }
+     
     /* TODO: Get This working
     $('span.edit').click(function() {
         taskID = $(this).attr('taskid');
@@ -48,7 +55,8 @@ $(document).ready(function() {
     $("#datepicker").click(function() {
         $.datepicker().show();
     });
-
+    
+    // Make each Due span color accordingly
     $('span.Due').each(function() {
         timestamp = $(this).attr('timestamp');
         // Ignore warning, doesn't work with "==="
@@ -63,11 +71,13 @@ $(document).ready(function() {
             $(this).html('F');
         }
     });
+    // Set Tasks as draggable
     $(".draggable").draggable({
         revert: true,
         appendTo: "body",
         helper: "clone"
     });
+    // Set Milestones and Deliveralbes as droppable
     $(".droppable").droppable({
         hoverClass: "ui-state-hover",
         accept: ":not(.ui-sortable-helper)",
@@ -88,11 +98,32 @@ $(document).ready(function() {
             );
         }
     });
+    
+    // JQuery UI Datepicker
+    $( "#Form_FakeDate" ).datepicker({ altField: "#Form_DateDue" });
+    $( "#Form_FakeDate" ).datepicker( "option", "altFormat", "yy-mm-dd" );
 
+    // Accordions
     $(function() {
-        $("#accordion")
+        $("#accordionToday")
                 .accordion({
-            event: "hoverintent",
+            event: "click",
+            header: "> div > h5",
+            collapsible: true,
+            active: false,
+            heightStyle: "content"
+        });
+        $("#accordionFuture")
+                .accordion({
+            event: "click",
+            header: "> div > h5",
+            collapsible: true,
+            active: false,
+            heightStyle: "content"
+        });
+        $("#accordionOverdue")
+                .accordion({
+            event: "click",
             header: "> div > h5",
             collapsible: true,
             active: false,
@@ -102,7 +133,7 @@ $(document).ready(function() {
         parentCount = $('#JsInfo').attr('ParentCount');
         for (i = 0; i < (parentCount + 1); i++) {
             $("#accordion" + i).accordion({
-                event: "hoverintent",
+                event: "click",
                 header: "> div > h5",
                 collapsible: true,
                 active: false,
